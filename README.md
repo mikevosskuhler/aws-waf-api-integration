@@ -1,5 +1,3 @@
-[[_TOC_]]
-
 # AWS WAF API Gateway integration
 Protect your Api endpoints using AWS WAF. 
 This repository contains a basic example on how to make you Api endpoints only available for one or a select group of IPs. 
