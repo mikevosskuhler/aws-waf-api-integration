@@ -1,0 +1,69 @@
+Transform: AWS::Serverless-2016-10-31
+Description: Testing ssm parameter store
+
+Resources:
+  ApiGatewayApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: prod
+  checkweather:
+    Type: AWS::Serverless::Function
+    Properties:
+        Handler: check_weather.handler
+        CodeUri: code/
+        Runtime: python3.8
+        Role: !GetAtt weatherrole.Arn
+        Environment:
+          Variables:
+            key: weatherkey
+        Timeout: 60
+        MemorySize: 1024
+        Events:
+          ApiEvent:
+            Type: Api
+            Properties:
+              Path: /weather
+              Method: get  
+              RestApiId:
+                Ref: ApiGatewayApi      
+        Tracing: Active
+        Tags: 
+          author: 'Mike'
+  weatherrole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument: 
+        Version: "2012-10-17"
+        Statement: 
+          - 
+            Effect: "Allow"
+            Principal: 
+              Service: 
+                - "lambda.amazonaws.com"
+            Action: 
+              - "sts:AssumeRole"
+      Description: Execution role for the check_weather lambda
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess
+      Policies:
+        - PolicyName: weatherrole
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+            - 
+              Action:
+              - ssm:GetParameter
+              Effect: Allow
+              Resource: arn:aws:ssm:eu-central-1:022998352254:parameter/weatherkey
+  MyWebACLAssociation:
+    Type: "AWS::WAFv2::WebACLAssociation"
+    Properties:
+      ResourceArn: !Sub 'arn:aws:apigateway:${AWS::Region}::/restapis/${ApiGatewayApi}/stages/prod'
+      WebACLArn: !ImportValue wafarn
+Outputs:
+  apiarn:
+    Description: arn of the api gateway
+    Value: !Sub 'arn:aws:apigateway:${AWS::Region}::/restapis/${ApiGatewayApi}/stages/prod'
+    Export: 
+      Name: apiarn

@@ -1,0 +1,43 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: WAF stack
+Resources:
+  MyACL:
+    Type: "AWS::WAFv2::WebACL"
+    Properties:
+      DefaultAction: #required
+        Block: {}
+      Description: Block everything except traffic coming from home
+      Name: home
+      Scope: REGIONAL #required
+      Rules:
+        - Action: 
+            Allow: {}
+          Name: home
+          Priority: 0
+          Statement: 
+            IPSetReferenceStatement:
+              Arn: !GetAtt homeip.Arn
+          VisibilityConfig: 
+            CloudWatchMetricsEnabled: true
+            MetricName: home
+            SampledRequestsEnabled: true      
+      VisibilityConfig: #required
+        CloudWatchMetricsEnabled: true
+        MetricName: waf
+        SampledRequestsEnabled: true
+
+  homeip:
+    Type: 'AWS::WAFv2::IPSet'
+    Properties:
+      Description: home ip Addres
+      Name: home
+      Scope: REGIONAL
+      IPAddressVersion: IPV4
+      Addresses:
+        - 1.2.1.1/32
+Outputs:
+  wafarn:
+    Description: The arn for your newly created ACL
+    Value: !GetAtt MyACL.Arn
+    Export: 
+      Name: wafarn
