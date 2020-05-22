@@ -44,6 +44,10 @@ From the sam-weather-api directory use the folling command:
 `sam deploy -g .`
 And give the SAM CLI the parameters you want to use for your deployment
 
+## Adding your openweather api key
+Use the following command to add your openweather api key to your ssm parameter store
+`aws ssm put-parameter --name weatherkey --type SecureString --value "<your api key here>"`
+
 ## using the WAF ACL for other endpoints
 You can now use this ACL for any endpoint you create by using the same syntax being used in the weather api SAM template:
 ```
