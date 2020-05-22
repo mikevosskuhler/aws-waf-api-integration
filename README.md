@@ -56,4 +56,5 @@ You can now use this ACL for any endpoint you create by using the same syntax be
     Properties:
       ResourceArn: !Sub 'arn:aws:apigateway:${AWS::Region}::/restapis/${ApiGatewayApi}/stages/prod'
       WebACLArn: !ImportValue wafarn
-```You can replace ApiGatewayApi with the name of any other api endpoints created in the template you want to protect. 
+```
+You can replace ApiGatewayApi with the name of any other api endpoints created in the template you want to protect. 
