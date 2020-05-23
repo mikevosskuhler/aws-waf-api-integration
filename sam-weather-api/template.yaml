@@ -55,7 +55,7 @@ Resources:
               Action:
               - ssm:GetParameter
               Effect: Allow
-              Resource: arn:aws:ssm:eu-central-1:022998352254:parameter/weatherkey
+              Resource: !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/weatherkey
   MyWebACLAssociation:
     Type: "AWS::WAFv2::WebACLAssociation"
     Properties:
